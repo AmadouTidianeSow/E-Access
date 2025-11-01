@@ -1,0 +1,22 @@
+<mat-sidenav-container class="employe-container">
+  <mat-sidenav #sidenav mode="side" opened class="employe-sidenav">
+    <app-employe-sidebar></app-employe-sidebar>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar color="primary" class="employe-toolbar">
+      <button mat-icon-button (click)="sidenav.toggle()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span>ESPACE EMPLOYE</span>
+      <span class="spacer"></span>
+      <button mat-icon-button>
+        <mat-icon>notifications</mat-icon>
+      </button>
+    </mat-toolbar>
+
+    <div class="employe-content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

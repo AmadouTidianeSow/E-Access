@@ -1,0 +1,26 @@
+.employe-container {
+  height: 100vh;
+}
+
+.employe-sidenav {
+  width: 240px;
+  background: #1e2a78; /* bleu foncé */
+  color: white;
+}
+
+.employe-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.employe-content {
+  padding: 16px;
+  background: #f5f5f5;
+  height: calc(100vh - 64px); /* toolbar height */
+  overflow: auto;
+}

@@ -1,0 +1,45 @@
+.create-container {
+  max-width: 900px;
+  margin: 1rem auto;
+
+  h2 {
+    margin-bottom: 1rem;
+  }
+
+  mat-card {
+    padding: 1rem;
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+
+    mat-form-field {
+      flex: 1 1 200px;
+      min-width: 180px;
+      margin-right: 1rem;
+    }
+  }
+
+  .visitor-group {
+    background: #f9f9f9;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 4px;
+  }
+
+  button[mat-button] {
+    margin: 0.5rem 0;
+  }
+
+  .error {
+    color: #c62828;
+    margin-top: 1rem;
+  }
+
+  .loading {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+  }
+}

@@ -1,0 +1,66 @@
+<!-- src/app/admin/settings/settings.component.html -->
+
+<div class="settings-container" [class.loading]="loading">
+  <h2>Paramètres généraux</h2>
+
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Horaires de visite</mat-card-title>
+      </mat-card-header>
+      <mat-card-content [formGroup]="form.get('horaires')">
+        <div class="fields">
+          <mat-form-field appearance="outline">
+            <mat-label>Ouverture</mat-label>
+            <input matInput type="time" formControlName="ouverture" />
+            <mat-error *ngIf="form.get('horaires.ouverture')?.hasError('required')">
+              Requis
+            </mat-error>
+            <mat-error *ngIf="form.get('horaires.ouverture')?.hasError('pattern')">
+              Format HH:mm
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Fermeture</mat-label>
+            <input matInput type="time" formControlName="fermeture" />
+            <mat-error *ngIf="form.get('horaires.fermeture')?.hasError('required')">
+              Requis
+            </mat-error>
+            <mat-error *ngIf="form.get('horaires.fermeture')?.hasError('pattern')">
+              Format HH:mm
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Seuil de visites concurrentes</mat-card-title>
+      </mat-card-header>
+      <mat-card-content [formGroup]="form.get('alertThresholds')">
+        <mat-form-field appearance="outline">
+          <mat-label>Maximum simultané</mat-label>
+          <input matInput type="number" formControlName="maxConcurrentVisits" min="1" />
+          <mat-error *ngIf="form.get('alertThresholds.maxConcurrentVisits')?.hasError('required')">
+            Requis
+          </mat-error>
+          <mat-error *ngIf="form.get('alertThresholds.maxConcurrentVisits')?.hasError('min')">
+            Doit être ≥ 1
+          </mat-error>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+
+    <div class="actions">
+      <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+        Enregistrer
+      </button>
+    </div>
+  </form>
+
+  <div class="overlay" *ngIf="loading">
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+  </div>
+</div>

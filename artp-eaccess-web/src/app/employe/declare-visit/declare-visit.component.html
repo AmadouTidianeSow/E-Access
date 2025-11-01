@@ -1,0 +1,106 @@
+<div class="declare-visit container">
+  <h2>Déclarer une visite</h2>
+
+  <form [formGroup]="visitForm" (ngSubmit)="submit()">
+    <!-- Type de visite -->
+    <mat-form-field appearance="outline">
+      <mat-label>Type de visite</mat-label>
+      <mat-select formControlName="typeVisiteId">
+        <mat-option *ngFor="let t of types" [value]="t.id">{{ t.nom }}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="visitForm.get('typeVisiteId')?.hasError('required')">
+        Type de visite requis
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Lieu -->
+    <mat-form-field appearance="outline">
+      <mat-label>Lieu</mat-label>
+      <mat-select formControlName="lieuId">
+        <mat-option *ngFor="let l of lieux" [value]="l.id">{{ l.nom }}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="visitForm.get('lieuId')?.hasError('required')">
+        Lieu requis
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Date & Heure de début -->
+    <div class="datetime-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Date de début</mat-label>
+        <input matInput [matDatepicker]="dp" formControlName="dateDebut" />
+        <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+        <mat-datepicker #dp></mat-datepicker>
+        <mat-error *ngIf="visitForm.get('dateDebut')?.hasError('required')">
+          Date requise
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Heure de début</mat-label>
+        <input matInput type="time" formControlName="timeDebut" />
+        <mat-error *ngIf="visitForm.get('timeDebut')?.hasError('required')">
+          Heure requise
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <!-- Liste des visiteurs -->
+    <div formArrayName="visitors">
+      <div
+        *ngFor="let v of visitors.controls; let i = index"
+        [formGroupName]="i"
+        class="visitor-card"
+      >
+        <h3>Visiteur {{ i + 1 }}</h3>
+        <mat-form-field appearance="outline">
+          <mat-label>Nom</mat-label>
+          <input matInput formControlName="nom" />
+          <mat-error *ngIf="v.get('nom')?.hasError('required')">
+            Nom requis
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Prénom</mat-label>
+          <input matInput formControlName="prenom" />
+          <mat-error *ngIf="v.get('prenom')?.hasError('required')">
+            Prénom requis
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Téléphone</mat-label>
+          <input matInput formControlName="telephone" />
+        </mat-form-field>
+
+        <button
+          mat-icon-button
+          color="warn"
+          type="button"
+          (click)="removeVisitor(i)"
+          *ngIf="visitors.length > 1"
+          aria-label="Supprimer visiteur"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <button mat-raised-button color="primary" type="button" (click)="addVisitor()">
+      + Ajouter un visiteur
+    </button>
+
+    <button mat-raised-button color="accent" type="submit" [disabled]="submitting">
+      Déclarer
+    </button>
+
+    <mat-error *ngIf="error" class="error">{{ error }}</mat-error>
+  </form>
+
+  <div *ngIf="result" class="result">
+    <h3>Visite créée (ID = {{ result.id }})</h3>
+    <p>Date début : {{ result.dateDebut | date:'short' }}</p>
+    <p>Statut : {{ result.statut }}</p>
+  </div>
+</div>

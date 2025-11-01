@@ -1,0 +1,27 @@
+.agent-container {
+  height: 100vh;
+}
+
+.agent-sidenav {
+  width: 240px;
+  background: #0d47a1; // bleu mat‑primary foncé
+  color: white;
+}
+
+.agent-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.agent-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.agent-main {
+  padding: 16px;
+  flex: 1;
+  overflow: auto;
+}

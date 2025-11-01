@@ -1,0 +1,18 @@
+<mat-sidenav-container class="agent-container">
+  <mat-sidenav #sidenav mode="side" opened class="agent-sidenav">
+    <app-agent-sidebar></app-agent-sidebar>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="agent-content">
+    <mat-toolbar color="primary" class="agent-toolbar">
+      <button mat-icon-button (click)="sidenav.toggle()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span>ESPACE AGENT</span>
+    </mat-toolbar>
+
+    <div class="agent-main">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

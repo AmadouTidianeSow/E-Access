@@ -1,0 +1,24 @@
+<div class="notifications-container">
+  <h2>Notifications</h2>
+
+  <div *ngIf="loading" class="status">Chargement...</div>
+  <div *ngIf="error" class="status error">{{ error }}</div>
+
+  <ul *ngIf="!loading && !error && notifications.length" class="notification-list">
+    <li
+      *ngFor="let notif of notifications"
+      [class.unread]="!notif.read"
+      (click)="markRead(notif)"
+    >
+      <div class="message">{{ notif.message }}</div>
+      <div class="meta">
+        <span class="type">{{ notif.type }}</span>
+        <span class="date">{{ notif.createdAt | date:'short' }}</span>
+      </div>
+    </li>
+  </ul>
+
+  <div *ngIf="!loading && !error && !notifications.length" class="status">
+    Aucune notification.
+  </div>
+</div>

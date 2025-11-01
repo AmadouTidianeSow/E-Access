@@ -1,0 +1,28 @@
+<div class="admin-dashboard" *ngIf="!loading; else loadingTpl">
+  <div class="cards">
+    <div class="card blue">
+      <mat-icon>today</mat-icon>
+      <div>Visites aujourd'hui</div>
+      <div class="value">{{ summary.todayVisits }}</div>
+    </div>
+    <div class="card green">
+      <mat-icon>check_circle</mat-icon>
+      <div>Visites confirmées</div>
+      <div class="value">{{ summary.confirmed }}</div>
+    </div>
+    <div class="card amber">
+      <mat-icon>schedule</mat-icon>
+      <div>En attente</div>
+      <div class="value">{{ summary.pending }}</div>
+    </div>
+    <div class="card red">
+      <mat-icon>notifications</mat-icon>
+      <div>Notifications</div>
+      <div class="value">{{ summary.notifications }}</div>
+    </div>
+  </div>
+  <!-- En guise d'ameliorations on peut  ajouter ici les "Prochaines visites" et "Notifications récentes" -->
+</div>
+<ng-template #loadingTpl>
+  <p>Chargement…</p>
+</ng-template>

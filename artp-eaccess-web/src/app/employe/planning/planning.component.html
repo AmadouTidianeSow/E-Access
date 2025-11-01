@@ -1,0 +1,48 @@
+<!-- src/app/employe/planning/planning.component.html -->
+<div class="planning container" *ngIf="!loading; else loadingTpl">
+  <h2>Mon Planning</h2>
+  <table mat-table [dataSource]="visites" class="mat-elevation-z8">
+
+    <!-- Date début -->
+    <ng-container matColumnDef="dateDebut">
+      <th mat-header-cell *matHeaderCellDef> Début </th>
+      <td mat-cell *matCellDef="let v"> {{ v.dateDebut | date:'short' }} </td>
+    </ng-container>
+
+    <!-- Statut -->
+    <ng-container matColumnDef="statut">
+      <th mat-header-cell *matHeaderCellDef> Statut </th>
+      <td mat-cell *matCellDef="let v"> {{ v.statut }} </td>
+    </ng-container>
+
+    <!-- Nb visiteurs -->
+    <ng-container matColumnDef="nombreVisiteurs">
+      <th mat-header-cell *matHeaderCellDef> Nombre de Visiteurs </th>
+      <td mat-cell *matCellDef="let v"> {{ v.nombreVisiteurs }} </td>
+    </ng-container>
+
+    <!-- Actions -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef> Actions </th>
+      <td mat-cell *matCellDef="let v">
+        <button
+          mat-button
+          color="primary"
+          [routerLink]="['/employe','visites','edit', v.id]"
+          [disabled]="v.statut !== 'en_attente'">
+          Modifier
+        </button>
+        <button mat-button color="warn" (click)="onCancel(v)" [disabled]="v.statut!=='en_attente'">
+          Annuler
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row        *matRowDef="let row; columns: columns;"></tr>
+  </table>
+</div>
+
+<ng-template #loadingTpl>
+  <p>Chargement…</p>
+</ng-template>

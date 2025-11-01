@@ -1,0 +1,15 @@
+
+.locations {
+  .create-form {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  .inline-field {
+    width: 250px;
+  }
+  table {
+    width: 100%;
+  }
+}

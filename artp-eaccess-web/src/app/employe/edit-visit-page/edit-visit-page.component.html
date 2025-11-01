@@ -1,0 +1,49 @@
+<div class="edit-visit container" *ngIf="!loading; else loadingTpl">
+  <h2>Modifier la visite</h2>
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <mat-form-field appearance="outline">
+      <mat-label>Date & heure de début</mat-label>
+      <input matInput type="datetime-local" formControlName="dateDebut">
+      <mat-error *ngIf="form.get('dateDebut')?.hasError('required')">
+        La date et l’heure sont requises
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Type de visite</mat-label>
+      <mat-select formControlName="typeVisiteId">
+        <mat-option *ngFor="let t of types" [value]="t.id">{{ t.nom }}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('typeVisiteId')?.hasError('required')">
+        Le type est requis
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Lieu</mat-label>
+      <mat-select formControlName="lieuId">
+        <mat-option *ngFor="let l of lieux" [value]="l.id">{{ l.nom }}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('lieuId')?.hasError('required')">
+        Le lieu est requis
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Statut</mat-label>
+      <mat-select formControlName="statut">
+        <mat-option *ngFor="let s of ['en_attente','en_cours','terminee','annulee']" [value]="s">
+          {{ s }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="buttons">
+      <button mat-raised-button color="primary" type="submit">Enregistrer</button>
+      <button mat-button type="button" (click)="cancel()">Annuler</button>
+    </div>
+
+    <mat-error *ngIf="error">{{ error }}</mat-error>
+  </form>
+</div>
+<ng-template #loadingTpl><p>Chargement…</p></ng-template>

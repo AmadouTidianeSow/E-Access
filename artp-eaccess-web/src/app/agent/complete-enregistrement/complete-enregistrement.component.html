@@ -1,0 +1,87 @@
+<div class="complete-container" *ngIf="!loading; else loadingTpl">
+  <h2>Compléter Visite #{{ visiteId }}</h2>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <ng-container *ngIf="visitors.length; else noPending">
+    <mat-accordion>
+      <mat-expansion-panel *ngFor="let v of visitors">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{ visitorForms[v.id].value.prenom }}
+            {{ visitorForms[v.id].value.nom }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <form [formGroup]="visitorForms[v.id]" class="visitor-form">
+          <div class="row">
+            <mat-form-field>
+              <mat-label>Nom</mat-label>
+              <input matInput formControlName="nom" />
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Prénom</mat-label>
+              <input matInput formControlName="prenom" />
+            </mat-form-field>
+          </div>
+          <div class="row">
+            <mat-form-field>
+              <mat-label>Téléphone</mat-label>
+              <input matInput formControlName="telephone" />
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Date de naissance</mat-label>
+              <input matInput type="date" formControlName="dateNaissance" />
+            </mat-form-field>
+          </div>
+          <div class="row">
+            <mat-form-field>
+              <mat-label>Type de pièce</mat-label>
+              <mat-select formControlName="pieceType">
+                <mat-option value="CNI">CNI</mat-option>
+                <mat-option value="Permis">Permis</mat-option>
+                <mat-option value="Passport">Passport</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Numéro de pièce</mat-label>
+              <input matInput formControlName="pieceNumero" />
+            </mat-form-field>
+          </div>
+
+          <div class="actions">
+            <!-- input file hidden, avec capture sur mobile/tablette -->
+            <input
+              type="file"
+              accept="image/*"
+              id="scan-{{ v.id }}"
+              hidden
+              (change)="onScan(v, $event)"
+              [attr.capture]="isMobileOrTablet ? 'environment' : null"
+            />
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="triggerScan(v.id)"
+            >
+              <mat-icon>camera_alt</mat-icon>
+            </button>
+            <button mat-raised-button color="accent" (click)="confirm(v)">
+              Valider
+            </button>
+          </div>
+        </form>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </ng-container>
+</div>
+
+<ng-template #noPending>
+  <p>Aucun visiteur en attente pour cette visite.</p>
+</ng-template>
+
+<ng-template #loadingTpl>
+  <div class="loading">
+    <mat-spinner></mat-spinner>
+    <p>Chargement…</p>
+  </div>
+</ng-template>

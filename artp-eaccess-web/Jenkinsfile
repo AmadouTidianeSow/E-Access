@@ -1,0 +1,159 @@
+pipeline {
+    agent any
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('intrahubcredentiel')
+    }
+    tools {
+        nodejs 'NodeJS'
+    }
+    stages {
+        stage("Clone Source") {
+            steps {
+                script {
+                    deleteDir()
+                    withCredentials([string(credentialsId: 'ARTPGITLABJENKINSTOKEN', variable: 'GITLAB_TOKEN')]) {
+                        sh '''
+                            git config --global url."https://oauth2:${GITLAB_TOKEN}@gitlab.com".insteadOf "https://gitlab.com"
+                            git clone https://gitlab.com/artp2/shell.git
+                        '''
+                    }
+                }
+            }
+        }
+
+       
+
+        stage('Prepare Dockerfile') {
+            steps {
+                script {
+                    dir('shell') {
+                        def dockerFile = 'Dockerfile'
+                        if (fileExists(dockerFile)) {
+                            def content = readFile(dockerFile)
+                            content = content.replace('${env}', env.BRANCH_NAME)
+                            writeFile file: dockerFile, text: content
+                        } else {
+                            error("Dockerfile file not found: ${dockerFile}")
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Prepare Deployment File') {
+            steps {
+                script {
+                    dir('shell') {
+                        def deploymentFile = 'deployment.yaml'
+                        if (fileExists(deploymentFile)) {
+                            def content = readFile(deploymentFile)
+                            content = content.replace('${BUILD_NUMBER}', BUILD_NUMBER)
+                                         .replace('${env}', env.BRANCH_NAME)
+                            writeFile file: deploymentFile, text: content
+                        } else {
+                            error("Deployment file not found: ${deploymentFile}")
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Login to Docker Hub') {
+            steps {
+                sh '''
+                    echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
+                '''
+                echo 'Successfully logged in to Docker Hub'
+            }
+        }
+
+        
+
+        stage('Prepare sonar') {
+            steps {
+                script {
+                    dir('shell') {
+                        def sonarFile = 'sonar-project.properties'
+                        if (fileExists(sonarFile)) {
+                            def content = readFile(sonarFile)
+                            content = content.replace('${env.BRANCH_NAME}', env.BRANCH_NAME)
+                            writeFile file: sonarFile, text: content
+                        } else {
+                            error("SonarQube configuration file not found: ${sonarFile}")
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            when {
+                anyOf {
+                    branch 'devs'
+                    branch 'main'
+                }
+            }
+            steps {
+                script {
+                    dir('shell') {
+                        sh 'npm run sonar'
+                    }
+                }
+            }
+        }
+
+        stage('Build and Push Docker Image') {
+            when {
+                anyOf {
+                    branch 'devs'
+                    branch 'recs'
+                }
+            }
+            steps {
+                script {
+                    def imageTag = "intrahub/repo:artp-shell_${env.BRANCH_NAME}_V${BUILD_NUMBER}"
+                    dir('shell') {
+                        echo "Building Docker image: ${imageTag}"
+                        sh "docker build -t ${imageTag} ."
+
+                        echo "Scanning Docker image for vulnerabilities: ${imageTag}"
+                        sh "trivy image --severity HIGH,CRITICAL ${imageTag}"
+
+                        echo "Pushing Docker image: ${imageTag}"
+                        sh "docker push ${imageTag}"
+                    }
+
+                    def imageName = "intrahub/repo:artp-shell_${env.BRANCH_NAME}_V${BUILD_NUMBER}"
+                    echo "Removing local Docker image: $imageName"
+                    sh "docker rmi $imageName || echo 'Image already removed or not found'"
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            when {
+                anyOf {
+                    branch 'devs'
+                }
+            }
+            steps {
+                echo "Deploying app for branch: ${env.BRANCH_NAME}"
+                dir('shell') {
+                    sh "kubectl apply -f deployment.yaml"
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            sh 'docker logout'
+        }
+        success {
+            echo "Pipeline completed successfully."
+        }
+        failure {
+            echo "Pipeline failed."
+        }
+    }
+}

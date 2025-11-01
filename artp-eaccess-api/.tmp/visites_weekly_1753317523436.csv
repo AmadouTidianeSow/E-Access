@@ -1,0 +1,3 @@
+ID,DateDebut,DateFin,Statut,NbVisiteurs,EmployeId,AgentId,Lieu,TypeVisite,Visiteurs (Nom Prenom)
+687be57ec6a5920a0c06708e,Mon Jul 21 2025 10:00:00 GMT+0000 (heure moyenne de Greenwich),,annulee,1,68694b60bf60eb443c32f438,,Batiment A: Etage,reunion,"bass toure"
+6881229dca1b0045643204a8,Wed Jul 23 2025 18:10:00 GMT+0000 (heure moyenne de Greenwich),,en_cours,1,68694b60bf60eb443c32f438,,Batiment A: Etage,reunion,"KHOUDIA SOW"

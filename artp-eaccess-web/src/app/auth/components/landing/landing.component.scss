@@ -1,0 +1,95 @@
+/* src/app/auth/components/landing/landing.component.scss */
+
+/* 1) Box‑sizing global */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+html, body {
+  margin: 0; padding: 0; width: 100%; overflow-x: hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* 2) Container */
+.landing-container {
+  display: flex; flex-direction: column;
+  min-height: 100vh;
+}
+
+/* 3) Header */
+.header {
+  position: fixed; top: 0; left: 0; right: 0;
+  background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  z-index: 1000;
+}
+.content-wrapper {
+  max-width: 1200px; margin: 0 auto; padding: 0 1rem;
+}
+.navbar {
+  display: flex; align-items: center; height: 64px;
+}
+.nav-brand {
+  display: flex; align-items: center;
+  .logo-img { width: 40px; margin-right: 8px; }
+  .app-title { font-size: 1.5rem; font-weight: bold; color: #1e3a8a; }
+}
+.nav-spacer { flex: 1; }
+.btn-login {
+  background: #3b82f6; color: #fff; border: none;
+  padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;
+  transition: background 0.2s;
+  &:hover { background: #2563eb; }
+}
+
+/* 4) Hero full‑screen */
+.hero-section {
+  flex: 1;
+  background: url('/assets/img/bg-login.svg') center/cover no-repeat;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  padding-top: 64px; /* header height */
+}
+.hero-overlay {
+  background: rgba(0,0,0,0.4);
+  width: 100%; height: calc(100vh - 64px);
+  display: flex; align-items: center; justify-content: center;
+  text-align: center; padding: 0 1rem;
+}
+.hero-content {
+  color: #fff; max-width: 700px;
+  .hero-title {
+    font-size: 2.8rem; margin-bottom: 1rem;
+    .highlight {
+      background: linear-gradient(45deg, #60a5fa, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+  .hero-subtitle {
+    font-size: 1.1rem; line-height: 1.5; margin-bottom: 1.5rem;
+  }
+  .btn-primary {
+    background: #3b82f6; color: #fff; border: none;
+    padding: 0.8rem 1.5rem; border-radius: 6px;
+    font-size: 1rem; cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(59,130,246,0.4);
+    }
+  }
+}
+
+/* 5) Footer */
+.footer {
+  background: #fff; padding: 1rem 0;
+  box-shadow: 0 -1px 8px rgba(0,0,0,0.05);
+}
+.footer-content {
+  text-align: center; color: #64748b; font-size: 0.9rem;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .hero-content .hero-title { font-size: 2.2rem; }
+  .hero-content .hero-subtitle { font-size: 1rem; }
+}

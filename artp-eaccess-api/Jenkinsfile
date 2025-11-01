@@ -1,0 +1,425 @@
+
+pipeline {
+    agent any
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('intrahubcredentiel')
+    }
+    tools {
+        nodejs 'NodeJS'
+    }
+    stages {
+        stage("Clone Source") {
+            steps {
+                script {
+                    deleteDir()
+                    withCredentials([string(credentialsId: 'ARTPGITLABJENKINSTOKEN', variable: 'GITLAB_TOKEN')]) {
+                        sh '''
+                            git config --global url."https://oauth2:${GITLAB_TOKEN}@gitlab.com".insteadOf "https://gitlab.com"
+                            git clone -b recs https://gitlab.com/artp2/artp-a360-api.git
+                        '''
+                    }
+                }
+            }
+        }
+      stage('Générer version et tag') {
+    steps {
+        dir('artp-a360-api') {
+            script {
+                // Définir la version initiale selon la branche
+                def major = 0
+                def minor = 0
+                def patch = 0
+                
+                if (env.BRANCH_NAME == 'main') {
+                    major = 1
+                    minor = 0
+                    patch = 0
+                } else if (env.BRANCH_NAME == 'devs') {
+                    major = 0
+                    minor = 1
+                    patch = 0
+                } else if (env.BRANCH_NAME == 'recs') {
+                    major = 0
+                    minor = 0
+                    patch = 1
+                } else {
+                    // Pour toute autre branche, utiliser 0.0.1
+                    major = 0
+                    minor = 0
+                    patch = 1
+                }
+                
+                // Pour les branches main, devs, recs, vérifier le dernier tag pour incrémenter le patch
+                if (env.BRANCH_NAME in ['main', 'devs', 'recs']) {
+                    try {
+                        def lastTag = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
+                        if (lastTag) {
+                            echo "Dernier tag trouvé: ${lastTag}"
+                            def baseVersion = lastTag.startsWith('v') ? lastTag.substring(1) : lastTag
+                            def versionParts = baseVersion.split('\\.')
+                            
+                            // Vérifier que le tag correspond au format attendu pour la branche
+                            def currentMajor = versionParts[0].toInteger()
+                            def currentMinor = versionParts[1].toInteger()
+                            def currentPatch = versionParts[2].toInteger()
+                            
+                            if ((env.BRANCH_NAME == 'main' && currentMajor == 1 && currentMinor == 0) ||
+                                (env.BRANCH_NAME == 'devs' && currentMajor == 0 && currentMinor == 1) ||
+                                (env.BRANCH_NAME == 'recs' && currentMajor == 0 && currentMinor == 0)) {
+                                patch = currentPatch + 1
+                            }
+                        } else {
+                            echo "Aucun tag précédent trouvé, utilisation des valeurs initiales."
+                        }
+                    } catch (Exception e) {
+                        echo "Aucun tag précédent trouvé, utilisation des valeurs initiales."
+                    }
+                }
+                
+                def newVersion = "${major}.${minor}.${patch}"
+                def newTag = "v${newVersion}"
+                def tagExists = true
+                
+                // Boucle pour trouver un tag disponible
+                while (tagExists) {
+                    def tagCheck = sh(script: "git tag -l ${newTag}", returnStdout: true).trim()
+                    
+                    if (tagCheck == newTag) {
+                        echo "⚠️ Le tag ${newTag} existe déjà. Incrémentation du numéro de patch."
+                        patch += 1
+                        newVersion = "${major}.${minor}.${patch}"
+                        newTag = "v${newVersion}"
+                    } else {
+                        tagExists = false
+                    }
+                }
+                
+                echo "📊 Nouveau numéro de version généré: ${newVersion}"
+                
+                // Configure git user
+                sh "git config user.email 'lytheboss10@gmail.com'"
+                sh "git config user.name 'lytheboss10'"
+                
+                // Configure git URL
+                withCredentials([string(credentialsId: 'ARTPGITLABJENKINSTOKEN', variable: 'GITLAB_TOKEN')]) {
+                    sh 'git config --global url."https://oauth2:${GITLAB_TOKEN}@gitlab.com".insteadOf "https://gitlab.com"'
+                }
+                
+                // Créer le tag
+                sh "git tag ${newTag}"
+                
+                // Stocker les valeurs
+                writeFile file: 'app_version.txt', text: newVersion
+                writeFile file: 'new_tag.txt', text: newTag
+                
+                // Push le tag
+                withCredentials([string(credentialsId: 'ARTPGITLABJENKINSTOKEN', variable: 'GITLAB_TOKEN')]) {
+                    sh 'git config credential.helper "!f() { echo username=\\$GITHUB_USER; echo password=\\$GITHUB_TOKEN; }; f"'
+                    sh "git push origin ${newTag}"
+                }
+                echo "📌 Nouveau tag généré et poussé: ${newTag}"
+            }
+        }
+    }
+}
+        stage('Update Version File') {
+            steps {
+                dir('artp-a360-api') {
+                    script {
+                        // Lire la version depuis le fichier temporaire
+                        def appVersion = readFile('app_version.txt').trim()
+                        def newTag = readFile('new_tag.txt').trim()
+                       
+                        echo "Mise à jour du fichier version.txt avec la version: ${appVersion}"
+                       
+                        def versionFile = 'src/version.txt'
+                        def formattedDate = new Date().format('dd/MM/yyyy')
+                        
+                        withCredentials([string(credentialsId: 'ARTPGITLABJENKINSTOKEN', variable: 'GITLAB_TOKEN')]) {
+                            // Assurez-vous d'avoir la configuration Git correcte
+                            sh 'git config --global url."https://oauth2:${GITLAB_TOKEN}@gitlab.com".insteadOf "https://gitlab.com"'
+                            
+                            // 1. Récupérer TOUS les changements distants sans les fusionner
+                            sh "git fetch origin"
+                            
+                            // 2. Créer une nouvelle branche temporaire basée sur la branche distante actuelle
+                            sh "git checkout -b version-update-${BUILD_NUMBER} origin/${env.BRANCH_NAME ?: 'main'}"
+                            
+                            // 3. Créer/modifier le fichier version.txt
+                            def versionContent = """Version: ${appVersion}
+Branch: ${env.BRANCH_NAME ?: 'main'}
+Build: ${BUILD_NUMBER}
+Date: ${formattedDate}"""
+                            
+                            writeFile file: versionFile, text: versionContent
+                            
+                            // 4. Committer les changements sur la branche temporaire
+                            sh "git add ${versionFile}"
+                            sh "git commit -m 'Mise à jour de version.txt pour la version ${appVersion} (build ${BUILD_NUMBER})' || echo 'Pas de changement à committer'"
+                            
+                            // 5. Pousser la branche temporaire vers la branche cible
+                            // Cette approche permet de préserver les changements existants
+                            sh "git push origin version-update-${BUILD_NUMBER}:${env.BRANCH_NAME ?: 'main'}"
+                        }
+                        
+                        echo "Fichier ${versionFile} mis à jour avec la version ${appVersion} et poussé."
+                    }
+                }
+            }
+        }
+        
+        stage('Update Datasource Config') {
+            steps {
+                script {
+                    dir('artp-a360-api') {
+                        def envSuffix = (env.BRANCH_NAME == 'recs') ? '-recs' : ''
+                        def datasourceFile = 'src/datasources/artp-a-360-datasource.datasource.ts'
+
+                        if (fileExists(datasourceFile)) {
+                            sh """
+                                sed -i 's|database: .*|database: "artp-a360-db${envSuffix}",|' ${datasourceFile}
+                            """
+                            sh "cat ${datasourceFile}"
+
+                        } else {
+                            error("Datasource file not found: ${datasourceFile}")
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Prepare Deployment File') {
+            steps {
+                script {
+                    dir('artp-a360-api') {
+                        // Lire la version depuis le fichier temporaire créé précédemment
+                        def appVersion = readFile('app_version.txt').trim()
+                        
+                        def deploymentFile = 'deployment.yaml'
+                        if (fileExists(deploymentFile)) {
+                            def content = readFile(deploymentFile)
+                            // Utiliser "prod" comme environnement si la branche est "main"
+                            def envValue = env.BRANCH_NAME == 'main' ? 'intra' : env.BRANCH_NAME
+                            content = content.replace('${env1}', envValue)
+                            writeFile file: deploymentFile, text: content
+                        } else {
+                            error("Deployment file not found: ${deploymentFile}")
+                        }
+                    }
+                }
+            }
+        }
+       
+        stage('Prepare Deployment File 1') {
+            steps {
+                script {
+                    dir('artp-a360-api') {
+                        // Lire la version depuis le fichier temporaire créé précédemment
+                        def appVersion = readFile('app_version.txt').trim()
+                        
+                        def deploymentFile = 'deployment.yaml'
+                        if (fileExists(deploymentFile)) {
+                            def content = readFile(deploymentFile)
+                            // Utiliser "prod" comme environnement si la branche est "main"
+                            def envValue = env.BRANCH_NAME == 'main' ? 'prod' : env.BRANCH_NAME
+                            content = content.replace('${BUILD_NUMBER}', appVersion)
+                                         .replace('${env}', envValue)
+                            writeFile file: deploymentFile, text: content
+                        } else {
+                            error("Deployment file not found: ${deploymentFile}")
+                        }
+                    }
+                }
+            }
+        }
+        stage('Verify Deployment File') {
+    steps {
+        script {
+            dir('artp-a360-api') {
+                // Vérifier si le fichier deployment.yaml existe
+                if (fileExists('deployment.yaml')) {
+                    // Lire le contenu du fichier après modifications
+                    def modifiedContent = readFile('deployment.yaml')
+                    
+                    // Afficher le contenu modifié dans les logs du pipeline
+                    echo "==== CONTENU DU FICHIER DEPLOYMENT.YAML APRÈS MODIFICATIONS ===="
+                    echo modifiedContent
+                    echo "================================================================"
+                    
+                    // Optionnel: Vérifier si les variables ont été correctement remplacées
+                    if (modifiedContent.contains('${env}') || 
+                        modifiedContent.contains('${env1}') || 
+                        modifiedContent.contains('${BUILD_NUMBER}')) {
+                        echo "⚠️ ATTENTION: Certaines variables n'ont pas été remplacées dans le fichier deployment.yaml!"
+                    } else {
+                        echo "✅ Toutes les variables ont été correctement remplacées dans le fichier deployment.yaml."
+                    }
+                    
+                    // Archiver le fichier pour consultation future (optionnel)
+                    archiveArtifacts artifacts: 'deployment.yaml', fingerprint: true
+                } else {
+                    error("Fichier deployment.yaml non trouvé pour vérification!")
+                }
+            }
+        }
+    }
+}
+        
+        stage('Login to Docker Hub') {
+            steps {
+                sh '''
+                    echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
+                '''
+                echo 'Successfully logged in to Docker Hub'
+            }
+        }
+ 
+        stage('Build and Push Docker Image') {
+            when {
+                anyOf {
+                    branch 'devs'
+                    branch 'recs'
+                    branch 'main'
+                }
+            }
+            steps {
+                script {
+                    // Lire la version depuis le fichier temporaire
+                    def appVersion = readFile('artp-a360-api/app_version.txt').trim()
+                    
+                    // Modifier le tag en fonction de la branche
+                    def branchTag = env.BRANCH_NAME == 'main' ? 'prod' : env.BRANCH_NAME
+                    def imageTag = "intrahub/repo:artp-a360-api_${branchTag}_v${appVersion}"
+                    
+                    dir('artp-a360-api') {
+                        echo "Building Docker image: ${imageTag}"
+                        sh "docker build --no-cache -t ${imageTag} ."
+                        echo "Scanning Docker image for vulnerabilities: ${imageTag}"
+                       // sh "trivy image  --exit-code 1  --severity  HIGH,CRITICAL ${imageTag}"
+                        echo "Pushing Docker image: ${imageTag}"
+                        sh "docker push ${imageTag}"
+                    }
+                    echo "Removing local Docker image: ${imageTag}"
+                    sh "docker rmi ${imageTag} || echo 'Image already removed or not found'"
+                }
+            }
+        }
+        
+        stage('Deploy to Kubernetes') {
+            when {
+                anyOf {
+                    branch 'devs'
+                    branch 'recs'
+                    branch 'main'
+                }
+            }
+            steps {
+                script {
+                    def deployEnv = env.BRANCH_NAME == 'main' ? 'prod' : env.BRANCH_NAME
+                    def kubeconfigId = env.BRANCH_NAME == 'main' ? 'kubeconfig-prod' : 'kubeconfig-dev'
+
+                    echo "Deploying app for environment: ${deployEnv} (branch: ${env.BRANCH_NAME})"
+                    dir('artp-a360-api') {
+                        withCredentials([file(credentialsId: kubeconfigId, variable: 'KUBECONFIG_FILE')]) {
+                            sh 'kubectl --kubeconfig=$KUBECONFIG_FILE apply -f deployment.yaml'
+                        }
+                        echo "Deployment applied with kubeconfig: ${kubeconfigId}"
+                    }
+                }
+            }
+        }
+        
+        stage('Prepare SonarQube') {
+            when {
+                anyOf {
+                    branch 'devs'
+                    branch 'recs'
+                }
+            }
+            steps {
+                script {
+                    dir('artp-a360-api') {
+                        def sonarFile = 'sonar-project.properties'
+                        if (fileExists(sonarFile)) {
+                            def content = readFile(sonarFile)
+                            content = content.replace('${env.BRANCH_NAME}', env.BRANCH_NAME)
+                            writeFile file: sonarFile, text: content
+                        } else {
+                            error("SonarQube configuration file not found: ${sonarFile}")
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Installation des Dépendances Node') {
+            when {
+                anyOf {
+                    branch 'devs'
+                    branch 'recs'
+                }
+            }
+            steps {
+                dir('artp-a360-api') {
+                    sh 'npm ci || npm install'
+                }
+            }
+        }
+
+        stage('OWASP Dependency-Check Scan et SonarQube Analysis') {
+            when {
+                anyOf {
+                    branch 'devs'
+                    branch 'recs'
+                }
+            }
+            steps {
+                dir('artp-a360-api') {
+                    echo "Deploying SonarQube Analysis for branch: ${env.BRANCH_NAME}"
+                    sh './node_modules/sonar-scanner/bin/sonar-scanner'
+                    echo "-------------------------------------------------------------"
+
+                    echo "OWASP Dependency-Check Scan for branch: ${env.BRANCH_NAME}"
+                    script {
+                        if (!fileExists('suppression.xml')) {
+                            writeFile file: 'suppression.xml', text: '''<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <!-- Ajoutez vos suppressions ici si nécessaire -->
+</suppressions>'''
+                        }
+                    }
+
+                    dependencyCheck additionalArguments: '''
+                        --scan ./ 
+                        --enableExperimental 
+                        --nodePackageSkipDevDependencies
+                        --suppression ./suppression.xml
+                    ''', odcInstallation: 'DP-Check', stopBuild: false
+
+                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml',
+                                          failedTotalHigh: 1,
+                                          failedTotalMedium: 5,
+                                          unstableTotalLow: 10
+                }
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: '**/dependency-check-report.html', allowEmptyArchive: true
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            sh 'docker logout'
+        }
+        success {
+            echo "Pipeline completed successfully."
+        }
+        failure {
+            echo "Pipeline failed."
+        }
+    }
+}

@@ -1,0 +1,32 @@
+<div class="impromptues-container">
+  <h2>Visites impromptues à valider</h2>
+
+  <div *ngIf="loading" class="status">Chargement...</div>
+  <div *ngIf="error" class="status error">{{ error }}</div>
+
+  <table *ngIf="!loading && !error && visits.length" class="visits-table">
+    <thead>
+      <tr>
+        <th>ID Visite</th>
+        <th>Date début</th>
+        <th>Nombre visiteurs</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let v of visits">
+        <td>{{ v.id }}</td>
+        <td>{{ v.dateDebut | date:'short' }}</td>
+        <td>{{ v.nombreVisiteurs }}</td>
+        <td>
+          <button mat-button color="primary" (click)="accept(v)">Accepter</button>
+          <button mat-button color="warn" (click)="refuse(v)">Refuser</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!loading && !error && !visits.length" class="status">
+    Aucune visite impromptue en attente.
+  </div>
+</div>

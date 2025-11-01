@@ -1,0 +1,21 @@
+.admin-dashboard {
+  .cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    .card {
+      flex: 1 1 calc(25% - 1rem);
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      border-radius: 8px;
+      color: white;
+      mat-icon { font-size: 40px; margin-right: 16px; }
+      .value { font-size: 24px; font-weight: bold; margin-left: auto; }
+    }
+    .blue   { background: #1976d2; }
+    .green  { background: #388e3c; }
+    .amber  { background: #ffa000; }
+    .red    { background: #d32f2f; }
+  }
+}

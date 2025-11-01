@@ -1,0 +1,25 @@
+<mat-sidenav-container class="admin-container">
+  <!-- Sidenav -->
+  <mat-sidenav
+    #sidenav
+    class="admin-sidenav"
+    [mode]="(isHandset$ | async) ? 'over' : 'side'"
+    [opened]="!(isHandset$ | async)"
+  >
+    <app-sidebar></app-sidebar>
+  </mat-sidenav>
+
+  <!-- Contenu principal -->
+  <mat-sidenav-content class="admin-content">
+    <mat-toolbar color="primary" class="admin-toolbar">
+      <button mat-icon-button (click)="sidenav.toggle()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span>ESPACE ADMINISTRATEUR</span>
+    </mat-toolbar>
+
+    <div class="admin-main">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

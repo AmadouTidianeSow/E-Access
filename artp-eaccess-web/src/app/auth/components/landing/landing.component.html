@@ -1,0 +1,36 @@
+<!-- src/app/auth/components/landing/landing.component.html -->
+<div class="landing-container">
+  <!-- Header -->
+  <header class="header">
+    <div class="content-wrapper navbar">
+      <div class="nav-brand">
+        <img src="/assets/img/logo.svg" alt="Logo ARTP" class="logo-img" />
+        <span class="app-title">E‑ACCESS ARTP</span>
+      </div>
+      <div class="nav-spacer"></div>
+      <button class="btn-login" (click)="goToLogin()">Se connecter</button>
+    </div>
+  </header>
+
+  <section class="hero-section">
+    <div class="hero-overlay">
+      <div class="hero-content">
+        <h1 class="hero-title">
+          Bienvenue sur <span class="highlight">E‑Access</span>
+        </h1>
+        <p class="hero-subtitle">
+          Solution web sécurisée pour gérer visites & contrôle d’accès  
+          avec OCR, rôles, suivi temps réel, rapports exportables & alertes.
+        </p>
+        <button class="btn-primary" (click)="goToLogin()">Commencer</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="content-wrapper footer-content">
+      <p>&copy; 2025 E‑Access. Tous droits réservés.</p>
+    </div>
+  </footer>
+</div>

@@ -1,0 +1,25 @@
+.admin-container {
+  height: 100vh;
+}
+
+.admin-sidenav {
+  width: 240px;
+}
+
+.admin-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.admin-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.admin-main {
+  padding: 16px;
+  flex: 1;
+  overflow: auto;
+}

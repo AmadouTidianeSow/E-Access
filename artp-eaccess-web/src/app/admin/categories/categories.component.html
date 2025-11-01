@@ -1,0 +1,50 @@
+<div class="categories">
+
+  <h2>Catégories de visiteurs</h2>
+
+  <!-- Formulaire de création -->
+  <form [formGroup]="createForm" (ngSubmit)="create()" class="create-form">
+    <mat-form-field appearance="fill">
+      <mat-label>Nom de la catégorie</mat-label>
+      <input matInput formControlName="nom" placeholder="Ex : Presse">
+    </mat-form-field>
+    <button mat-flat-button color="primary" type="submit" [disabled]="createForm.invalid">
+      Ajouter
+    </button>
+  </form>
+
+  <!-- Tableau -->
+  <table mat-table [dataSource]="categories" class="mat-elevation-z8">
+
+    <!-- Colonne Nom -->
+    <ng-container matColumnDef="nom">
+      <th mat-header-cell *matHeaderCellDef>Nom</th>
+      <td mat-cell *matCellDef="let cat">
+        <ng-container *ngIf="editingId === cat.id; else viewNom">
+          <mat-form-field appearance="outline" class="inline-field">
+            <input matInput [formControl]="editForm.get('nom')" />
+          </mat-form-field>
+        </ng-container>
+        <ng-template #viewNom>{{ cat.nom }}</ng-template>
+      </td>
+    </ng-container>
+
+    <!-- Colonne Actions -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let cat">
+        <ng-container *ngIf="editingId === cat.id; else viewActions">
+          <button mat-button (click)="saveEdit()" [disabled]="editForm.invalid">💾</button>
+          <button mat-button (click)="cancelEdit()">✖️</button>
+        </ng-container>
+        <ng-template #viewActions>
+          <button mat-icon-button (click)="startEdit(cat)"><mat-icon>edit</mat-icon></button>
+          <button mat-icon-button color="warn" (click)="delete(cat)"><mat-icon>delete</mat-icon></button>
+        </ng-template>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="['nom','actions']"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['nom','actions']"></tr>
+  </table>
+</div>

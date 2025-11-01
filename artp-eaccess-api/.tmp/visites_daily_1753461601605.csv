@@ -1,0 +1,3 @@
+ID,DateDebut,DateFin,Statut,NbVisiteurs,EmployeId,AgentId,Lieu,TypeVisite,Visiteurs (Nom Prenom)
+6883b20de282b435787130b6,Fri Jul 25 2025 16:40:00 GMT+0000 (heure moyenne de Greenwich),Fri Jul 25 2025 16:38:40 GMT+0000 (heure moyenne de Greenwich),terminee,1,68694b60bf60eb443c32f438,,Batiment A :Etage3,Depot de cheque,"AMADOU TIDIANE SOW"
+6883b2b3e282b435787130ba,Fri Jul 25 2025 16:37:07 GMT+0000 (heure moyenne de Greenwich),Fri Jul 25 2025 16:38:44 GMT+0000 (heure moyenne de Greenwich),terminee,1,68694b60bf60eb443c32f438,68694a78bf60eb443c32f437,Batiment B: Etage1,reunion,"KHOUDIA SOW"

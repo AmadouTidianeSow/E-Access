@@ -1,0 +1,66 @@
+<!-- src/app/agent/suivi-visiteurs/suivi-visiteurs.component.html -->
+
+<div class="suivi-container" *ngIf="!loading; else loadingTpl">
+  <h2>Suivi des visiteurs (check‑in réalisés)</h2>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <table mat-table [dataSource]="visitors" class="mat-elevation-z8" *ngIf="visitors.length">
+    <!-- Pivot ID -->
+    <ng-container matColumnDef="pivotId">
+      <th mat-header-cell *matHeaderCellDef>Pivot</th>
+      <td mat-cell *matCellDef="let v"> {{ v.id }} </td>
+    </ng-container>
+
+    <!-- Visite ID -->
+    <ng-container matColumnDef="visiteId">
+      <th mat-header-cell *matHeaderCellDef>Visite </th>
+      <td mat-cell *matCellDef="let v"> {{ v.visiteId }} </td>
+    </ng-container>
+
+    <!-- Date début de la visite -->
+    <ng-container matColumnDef="dateDebut">
+      <th mat-header-cell *matHeaderCellDef>Date début</th>
+      <td mat-cell *matCellDef="let v"> 
+        {{ v.visite?.dateDebut | date:'short' }} 
+      </td>
+    </ng-container>
+
+    <!-- Nom du visiteur -->
+    <ng-container matColumnDef="visiteur">
+      <th mat-header-cell *matHeaderCellDef>Visiteur</th>
+      <td mat-cell *matCellDef="let v">
+        {{ v.visiteur.prenom }} {{ v.visiteur.nom }}
+      </td>
+    </ng-container>
+
+    <!-- Check‑in -->
+    <ng-container matColumnDef="checkIn">
+      <th mat-header-cell *matHeaderCellDef>Check‑in</th>
+      <td mat-cell *matCellDef="let v"> {{ v.checkIn | date:'short' }} </td>
+    </ng-container>
+
+    <!-- Action Check‑out -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let v">
+        <button mat-raised-button color="warn" (click)="checkout(v)">
+          Check‑out
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="['pivotId','visiteId','dateDebut','visiteur','checkIn','actions']"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['pivotId','visiteId','dateDebut','visiteur','checkIn','actions'];"></tr>
+  </table>
+
+  <div *ngIf="!visitors.length && !error" class="empty">
+    Aucun visiteur en attente de check‑out.
+  </div>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="loading">
+    <mat-spinner></mat-spinner>
+    <p>Chargement des visiteurs…</p>
+  </div>
+</ng-template>

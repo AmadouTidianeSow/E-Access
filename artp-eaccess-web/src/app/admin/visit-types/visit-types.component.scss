@@ -1,0 +1,16 @@
+/* src/app/admin/visit-types/visit-types.component.scss */
+
+.visit-types {
+  .create-form {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  .inline-field {
+    width: 200px;
+  }
+  table {
+    width: 100%;
+  }
+}

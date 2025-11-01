@@ -1,0 +1,33 @@
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <img class="logo-img" src="/assets/img/logo.svg" alt="E‑ACCESS logo" />
+    <span class="app-title">E‑ACCESS ARTP</span>
+  </div>
+
+  <mat-nav-list>
+    <a
+      mat-list-item
+      *ngFor="let mi of menuItems"
+      [routerLink]="mi.path"
+      routerLinkActive="active-link"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <mat-icon mat-list-icon>{{ mi.icontype }}</mat-icon>
+      <span mat-line>{{ mi.title }}</span>
+    </a>
+  </mat-nav-list>
+
+  <div class="sidebar-footer">
+    <button mat-button (click)="logout()">
+      <mat-icon>exit_to_app</mat-icon>
+      <span>Déconnexion</span>
+    </button>
+    <div *ngIf="user" class="user-info">
+      <mat-icon>person</mat-icon>
+      <div>
+        <div class="name">{{ user.prenom }} {{ user.nom }}</div>
+        <div class="role">{{ user.role | titlecase }}</div>
+      </div>
+    </div>
+  </div>
+</nav>

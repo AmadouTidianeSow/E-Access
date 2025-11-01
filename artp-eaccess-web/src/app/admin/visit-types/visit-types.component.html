@@ -1,0 +1,69 @@
+<!-- src/app/admin/visit-types/visit-types.component.html -->
+
+<div class="visit-types">
+
+  <h2>Types de visite</h2>
+
+  <!-- Formulaire de création -->
+  <form [formGroup]="createForm" (ngSubmit)="create()" class="create-form">
+    <mat-form-field appearance="fill">
+      <mat-label>Nom</mat-label>
+      <input matInput formControlName="nom" placeholder="Ex : Visite technique">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Description (facultative)</mat-label>
+      <input matInput formControlName="description" placeholder="Décrivez le type">
+    </mat-form-field>
+    <button mat-flat-button color="primary" type="submit" [disabled]="createForm.invalid">
+      Ajouter
+    </button>
+  </form>
+
+  <!-- Tableau -->
+  <table mat-table [dataSource]="types" class="mat-elevation-z8">
+
+    <!-- Colonne Nom -->
+    <ng-container matColumnDef="nom">
+      <th mat-header-cell *matHeaderCellDef>Nom</th>
+      <td mat-cell *matCellDef="let t">
+        <ng-container *ngIf="editingId === t.id; else viewNom">
+          <mat-form-field appearance="outline" class="inline-field">
+            <input matInput [formControl]="editForm.get('nom')" />
+          </mat-form-field>
+        </ng-container>
+        <ng-template #viewNom>{{ t.nom }}</ng-template>
+      </td>
+    </ng-container>
+
+    <!-- Colonne Description -->
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef>Description</th>
+      <td mat-cell *matCellDef="let t">
+        <ng-container *ngIf="editingId === t.id; else viewDesc">
+          <mat-form-field appearance="outline" class="inline-field">
+            <input matInput [formControl]="editForm.get('description')" />
+          </mat-form-field>
+        </ng-container>
+        <ng-template #viewDesc>{{ t.description || '—' }}</ng-template>
+      </td>
+    </ng-container>
+
+    <!-- Colonne Actions -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let t">
+        <ng-container *ngIf="editingId === t.id; else viewActions">
+          <button mat-button (click)="saveEdit()" [disabled]="editForm.invalid">💾</button>
+          <button mat-button (click)="cancelEdit()">✖️</button>
+        </ng-container>
+        <ng-template #viewActions>
+          <button mat-icon-button (click)="startEdit(t)"><mat-icon>edit</mat-icon></button>
+          <button mat-icon-button color="warn" (click)="delete(t)"><mat-icon>delete</mat-icon></button>
+        </ng-template>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="['nom','description','actions']"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['nom','description','actions']"></tr>
+  </table>
+</div>

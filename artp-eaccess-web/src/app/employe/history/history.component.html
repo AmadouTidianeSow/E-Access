@@ -1,0 +1,21 @@
+<!-- src/app/employe/history/history.component.html -->
+<div class="history container" *ngIf="!loading; else loadTpl">
+  <h2>Historique</h2>
+  <table mat-table [dataSource]="visits" class="mat-elevation-z8">
+    <ng-container matColumnDef="dateDebut">
+      <th mat-header-cell *matHeaderCellDef>Date début</th>
+      <td mat-cell *matCellDef="let v">{{ v.dateDebut | date:'short' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="dateFin">
+      <th mat-header-cell *matHeaderCellDef>Date fin</th>
+      <td mat-cell *matCellDef="let v">{{ v.dateFin ? (v.dateFin | date:'short') : '-' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="statut">
+      <th mat-header-cell *matHeaderCellDef>Statut</th>
+      <td mat-cell *matCellDef="let v">{{ v.statut }}</td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="['dateDebut','dateFin','statut']"></tr>
+    <tr mat-row        *matRowDef="let row; columns: ['dateDebut','dateFin','statut'];"></tr>
+  </table>
+</div>
+<ng-template #loadTpl><p>Chargement…</p></ng-template>

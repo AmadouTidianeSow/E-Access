@@ -1,0 +1,40 @@
+<div class="reports-container">
+  <h2>Export CSV des visites</h2>
+
+  <section class="preset">
+    <h3>Périodes prédéfinies</h3>
+    <div class="buttons">
+      <button mat-stroked-button color="primary" (click)="exportPeriod('daily')" [disabled]="loading">
+        Journalier
+      </button>
+      <button mat-stroked-button color="primary" (click)="exportPeriod('weekly')" [disabled]="loading">
+        Hebdomadaire
+      </button>
+      <button mat-stroked-button color="primary" (click)="exportPeriod('monthly')" [disabled]="loading">
+        Mensuel
+      </button>
+    </div>
+  </section>
+
+  <section class="custom">
+    <h3>Période personnalisée</h3>
+    <mat-form-field appearance="fill">
+      <mat-label>Du</mat-label>
+      <input matInput [matDatepicker]="dp1" [(ngModel)]="from">
+      <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
+      <mat-datepicker #dp1></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Au</mat-label>
+      <input matInput [matDatepicker]="dp2" [(ngModel)]="to">
+      <mat-datepicker-toggle matSuffix [for]="dp2"></mat-datepicker-toggle>
+      <mat-datepicker #dp2></mat-datepicker>
+    </mat-form-field>
+    <button mat-flat-button color="accent" (click)="exportCustom()" [disabled]="loading">
+      Exporter CSV
+    </button>
+  </section>
+
+  <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+  <div class="error" *ngIf="error">{{ error }}</div>
+</div>

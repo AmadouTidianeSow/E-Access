@@ -1,0 +1,104 @@
+<!-- src/app/admin/historique/historique.component.html -->
+<div class="historique-container">
+  <h2>Historique</h2>
+
+  <mat-button-toggle-group [(ngModel)]="mode" (change)="switchMode(mode)">
+    <mat-button-toggle value="visites">Visites</mat-button-toggle>
+    <mat-button-toggle value="visiteurs">Visiteurs</mat-button-toggle>
+  </mat-button-toggle-group>
+
+  <form [formGroup]="filterForm" class="filter-form">
+    <mat-form-field appearance="outline">
+      <mat-label>Du</mat-label>
+      <input matInput [matDatepicker]="dpFrom" formControlName="from">
+      <mat-datepicker-toggle matSuffix [for]="dpFrom"></mat-datepicker-toggle>
+      <mat-datepicker #dpFrom></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Au</mat-label>
+      <input matInput [matDatepicker]="dpTo" formControlName="to">
+      <mat-datepicker-toggle matSuffix [for]="dpTo"></mat-datepicker-toggle>
+      <mat-datepicker #dpTo></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Statut</mat-label>
+      <mat-select formControlName="statut">
+        <mat-option value="">Tous</mat-option>
+        <ng-container *ngIf="mode==='visites'">
+          <mat-option value="en_attente">En attente</mat-option>
+          <mat-option value="en_cours">En cours</mat-option>
+          <mat-option value="terminee">Terminée</mat-option>
+          <mat-option value="annulee">Annulée</mat-option>
+        </ng-container>
+        <ng-container *ngIf="mode==='visiteurs'">
+          <mat-option value="pending">Pending</mat-option>
+          <mat-option value="checked_in">Checked‑in</mat-option>
+          <mat-option value="checked_out">Checked‑out</mat-option>
+        </ng-container>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" (click)="applyFilter()">Filtrer</button>
+    <button mat-button (click)="resetFilter()">Réinitialiser</button>
+  </form>
+
+  <!-- Table Visites -->
+  <table mat-table *ngIf="mode==='visites'" [dataSource]="filteredVisits">
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef>ID</th>
+      <td mat-cell *matCellDef="let v">{{v.id}}</td>
+    </ng-container>
+    <ng-container matColumnDef="date">
+      <th mat-header-cell *matHeaderCellDef>Date</th>
+      <td mat-cell *matCellDef="let v">{{v.dateDebut|date:'short'}}</td>
+    </ng-container>
+    <ng-container matColumnDef="statut">
+      <th mat-header-cell *matHeaderCellDef>Statut</th>
+      <td mat-cell *matCellDef="let v">{{v.statut}}</td>
+    </ng-container>
+    <ng-container matColumnDef="type">
+      <th mat-header-cell *matHeaderCellDef>Type</th>
+      <td mat-cell *matCellDef="let v">{{typeMap[v.typeVisiteId] || v.typeVisiteId}}</td>
+    </ng-container>
+    <ng-container matColumnDef="lieu">
+      <th mat-header-cell *matHeaderCellDef>Lieu</th>
+      <td mat-cell *matCellDef="let v">{{lieuMap[v.lieuId] || v.lieuId}}</td>
+    </ng-container>
+    <ng-container matColumnDef="nb">
+      <th mat-header-cell *matHeaderCellDef>#Visiteurs</th>
+      <td mat-cell *matCellDef="let v">{{v.nombreVisiteurs}}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="['id','date','statut','type','lieu','nb']"></tr>
+    <tr mat-row *matRowDef="let r; columns:['id','date','statut','type','lieu','nb']"></tr>
+  </table>
+
+  <!-- Table Visiteurs -->
+  <table mat-table *ngIf="mode==='visiteurs'" [dataSource]="filteredVisitors">
+    <ng-container matColumnDef="nom">
+      <th mat-header-cell *matHeaderCellDef>Nom</th>
+      <td mat-cell *matCellDef="let x">{{x.visiteur.nom}}</td>
+    </ng-container>
+    <ng-container matColumnDef="prenom">
+      <th mat-header-cell *matHeaderCellDef>Prénom</th>
+      <td mat-cell *matCellDef="let x">{{x.visiteur.prenom}}</td>
+    </ng-container>
+    <ng-container matColumnDef="checkIn">
+      <th mat-header-cell *matHeaderCellDef>Arrivée</th>
+      <td mat-cell *matCellDef="let x">{{x.checkIn|date:'short'}}</td>
+    </ng-container>
+    <ng-container matColumnDef="checkOut">
+      <th mat-header-cell *matHeaderCellDef>Départ</th>
+      <td mat-cell *matCellDef="let x">{{x.checkOut|date:'short'}}</td>
+    </ng-container>
+    <ng-container matColumnDef="statutVisite">
+      <th mat-header-cell *matHeaderCellDef>Statut</th>
+      <td mat-cell *matCellDef="let x">{{x.statut}}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="['nom','prenom','checkIn','checkOut','statutVisite']"></tr>
+    <tr mat-row *matRowDef="let r; columns:['nom','prenom','checkIn','checkOut','statutVisite']"></tr>
+  </table>
+</div>

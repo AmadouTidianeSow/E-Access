@@ -1,0 +1,104 @@
+<div class="create-container" [formGroup]="form">
+  <h2>Créer une visite (manuel)</h2>
+
+  <mat-card>
+    <mat-card-content>
+      <div class="row">
+        <mat-form-field>
+          <mat-label>Employé</mat-label>
+          <mat-select formControlName="employeId">
+            <mat-option *ngFor="let e of employees" [value]="e.id">
+              {{ e.prenom }} {{ e.nom }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Type de visite</mat-label>
+          <mat-select formControlName="typeVisiteId">
+            <mat-option *ngFor="let t of visitTypes" [value]="t.id">
+              {{ t.nom }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Lieu</mat-label>
+          <mat-select formControlName="lieuId">
+            <mat-option *ngFor="let l of locations" [value]="l.id">
+              {{ l.nom }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <h3>Visiteurs</h3>
+      <div formArrayName="visitors">
+        <div *ngFor="let grp of visitors.controls; let i = index" [formGroupName]="i" class="visitor-group">
+          <div class="row">
+            <mat-form-field>
+              <mat-label>Nom</mat-label>
+              <input matInput formControlName="nom">
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Prénom</mat-label>
+              <input matInput formControlName="prenom">
+            </mat-form-field>
+          </div>
+          <div class="row">
+            <mat-form-field>
+              <mat-label>Téléphone</mat-label>
+              <input matInput formControlName="telephone">
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Date de naissance</mat-label>
+              <input matInput formControlName="dateNaissance" type="date">
+            </mat-form-field>
+          </div>
+          <div class="row">
+            <mat-form-field>
+              <mat-label>Catégorie</mat-label>
+              <mat-select formControlName="categorieId">
+                <mat-option *ngFor="let c of categories" [value]="c.id">
+                  {{ c.nom }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Type de pièce</mat-label>
+              <mat-select formControlName="pieceType">
+                <mat-option value="CNI">CNI</mat-option>
+                <mat-option value="Permis">Permis</mat-option>
+                <mat-option value="Passport">Passport</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Numéro de pièce</mat-label>
+              <input matInput formControlName="pieceNumero">
+            </mat-form-field>
+          </div>
+          <button mat-icon-button color="warn" (click)="removeVisitor(i)" *ngIf="visitors.length>1">
+            <mat-icon>remove_circle</mat-icon>
+          </button>
+          <mat-divider></mat-divider>
+        </div>
+      </div>
+
+      <button mat-button color="primary" (click)="addVisitor()">
+        <mat-icon>person_add</mat-icon>
+        Ajouter un visiteur
+      </button>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-raised-button color="accent" (click)="submit()" [disabled]="loading">
+        Créer la visite
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <div class="error" *ngIf="error">{{ error }}</div>
+  <div class="loading" *ngIf="loading">
+    <mat-progress-spinner diameter="30" mode="indeterminate"></mat-progress-spinner>
+  </div>
+</div>

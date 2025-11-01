@@ -1,0 +1,11 @@
+ID,DateDebut,DateFin,Statut,NbVisiteurs,EmployeId,AgentId,Lieu,TypeVisite,Visiteurs (Nom Prenom)
+687ad75d7dd101450810fd76,Sat Jul 19 2025 10:00:00 GMT+0000 (heure moyenne de Greenwich),,annulee,1,68694b60bf60eb443c32f438,,Batiment A :Etage2,Breafing,"Amadou Tidiane toure"
+687ba5b3579b4c45ccc1bac1,Sat Jul 19 2025 14:30:00 GMT+0000 (heure moyenne de Greenwich),,annulee,1,68694b60bf60eb443c32f438,,Batiment A :Etage2,reunion,"Amadou Tidiane sow"
+687be57ec6a5920a0c06708e,Mon Jul 21 2025 10:00:00 GMT+0000 (heure moyenne de Greenwich),,annulee,1,68694b60bf60eb443c32f438,,Batiment A: Etage,reunion,"bass toure"
+687c3dae26f74f2fcca98463,Sun Jul 20 2025 00:51:58 GMT+0000 (heure moyenne de Greenwich),,annulee,1,68694b60bf60eb443c32f438,68694a78bf60eb443c32f437,Batiment A: Etage,reunion,"Racine LY"
+687d1a560d6b395590b96bbe,Sun Jul 20 2025 16:50:00 GMT+0000 (heure moyenne de Greenwich),,annulee,1,68694b60bf60eb443c32f438,,Batiment A: Etage,Breafing,"AMADOU TIDIANE SOW"
+687d1b450d6b395590b96bc2,Sun Jul 20 2025 17:00:00 GMT+0000 (heure moyenne de Greenwich),,annulee,2,68694b60bf60eb443c32f438,,Batiment A :Etage2,Breafing,"AMADOU TIDIANE SOW; KHOUDIA SOW"
+687d1f90808e13579c230202,Sun Jul 20 2025 17:00:00 GMT+0000 (heure moyenne de Greenwich),,en_cours,1,68694b60bf60eb443c32f438,,Batiment A: Etage,reunion,"KHOUDIA SOW"
+687d322db32660326474c93a,Sun Jul 20 2025 18:30:00 GMT+0000 (heure moyenne de Greenwich),,en_cours,1,68694b60bf60eb443c32f438,,Batiment A: Etage,reunion,"KHOUDIA SOW"
+687d46a527094a5650ba339b,Sun Jul 20 2025 19:42:29 GMT+0000 (heure moyenne de Greenwich),Sun Jul 20 2025 19:43:35 GMT+0000 (heure moyenne de Greenwich),terminee,1,68694b60bf60eb443c32f438,68694a78bf60eb443c32f437,Batiment A: Etage,reunion,"Racine LY"
+6881229dca1b0045643204a8,Wed Jul 23 2025 18:10:00 GMT+0000 (heure moyenne de Greenwich),Thu Jul 24 2025 00:39:54 GMT+0000 (heure moyenne de Greenwich),terminee,1,68694b60bf60eb443c32f438,,Batiment A: Etage,reunion,"KHOUDIA SOW"

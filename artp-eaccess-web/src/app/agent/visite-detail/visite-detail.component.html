@@ -1,0 +1,74 @@
+<!-- src/app/agent/visite-detail/visite-detail.component.html -->
+
+<div class="detail-container" *ngIf="visit; else loadingTpl">
+  <h2>Détail de la visite {{ visit.id }}</h2>
+  <p><strong>Employé :</strong> {{ visit.employeId }}</p>
+  <p><strong>Date début :</strong> {{ visit.dateDebut | date:'short' }}</p>
+  <p><strong>Statut :</strong> {{ visit.statut | uppercase }}</p>
+
+  <h3>Visiteurs ({{ visit.nombreVisiteurs }})</h3>
+  <table mat-table [dataSource]="visitors" class="mat-elevation-z8">
+
+    <!-- Name -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Nom & Prénom </th>
+      <td mat-cell *matCellDef="let v">
+        {{ v.visiteur.nom }} {{ v.visiteur.prenom }}
+      </td>
+    </ng-container>
+
+    <!-- Statut -->
+    <ng-container matColumnDef="statut">
+      <th mat-header-cell *matHeaderCellDef> Statut </th>
+      <td mat-cell *matCellDef="let v">
+        {{ v.statut }}
+      </td>
+    </ng-container>
+
+    <!-- Actions -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef> Actions </th>
+      <td mat-cell *matCellDef="let v">
+        <ng-container [ngSwitch]="v.statut">
+          <!-- Pending: OCR or manual -->
+          <div *ngSwitchCase="'pending'" class="actions-pending">
+            <input type="file" (change)="onScan(v.id,$event)" />
+            <button mat-stroked-button (click)="onManual(v.id)">
+              Saisie manuelle
+            </button>
+          </div>
+          <!-- Checked_in: allow checkout -->
+          <button
+            mat-raised-button
+            color="warn"
+            *ngSwitchCase="'checked_in'"
+            (click)="onCheckout(v.id)"
+          >
+            Check‑out
+          </button>
+          <!-- Checked_out: done -->
+          <span matBadge="✔" matBadgeColor="primary" *ngSwitchCase="'checked_out'">
+            Terminé
+          </span>
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <tr
+      mat-header-row
+      *matHeaderRowDef="['name','statut','actions']"
+    ></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: ['name','statut','actions'];"
+    ></tr>
+  </table>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="loading">
+    <mat-spinner></mat-spinner>
+    <p>Chargement…</p>
+    <p *ngIf="error">{{ error }}</p>
+  </div>
+</ng-template>

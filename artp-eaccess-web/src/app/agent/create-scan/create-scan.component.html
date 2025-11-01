@@ -1,0 +1,111 @@
+<!-- src/app/agent/create-scan/create-scan.component.html -->
+<div class="create-scan container">
+  <h2>Créer une visite par scan OCR</h2>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="fields">
+      <mat-form-field appearance="fill">
+        <mat-label>Employé</mat-label>
+        <mat-select formControlName="employeId">
+          <mat-option *ngFor="let e of employees" [value]="e.id">
+            {{ e.nom }} {{ e.prenom }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Type de visite</mat-label>
+        <mat-select formControlName="typeVisiteId">
+          <mat-option *ngFor="let t of types" [value]="t.id">
+            {{ t.nom }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Lieu</mat-label>
+        <mat-select formControlName="lieuId">
+          <mat-option *ngFor="let l of locations" [value]="l.id">
+            {{ l.nom }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Type de pièce</mat-label>
+        <mat-select formControlName="pieceType">
+          <mat-option value="CNI">CNI</mat-option>
+          <mat-option value="Permis">Permis</mat-option>
+          <mat-option value="Passport">Passport</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="file-input">
+        <input
+          type="file"
+          accept="image/*"
+          (change)="onFileSelected($event)"
+          [attr.capture]="isMobileOrTablet ? 'environment' : null"
+        />
+      </div>
+    </div>
+
+    <div *ngIf="loadingPreview" class="loading-preview">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Analyse en cours…</p>
+    </div>
+
+    <div formArrayName="visitors" *ngIf="previewDone">
+      <h3>Informations visiteurs détectées</h3>
+      <div
+        *ngFor="let grp of visitorsArray.controls; let i = index"
+        [formGroupName]="i"
+        class="visitor-card"
+      >
+        <mat-form-field appearance="outline">
+          <mat-label>Nom</mat-label>
+          <input matInput formControlName="nom" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Prénom</mat-label>
+          <input matInput formControlName="prenom" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Type de pièce</mat-label>
+          <mat-select formControlName="pieceType">
+            <mat-option value="CNI">CNI</mat-option>
+            <mat-option value="Permis">Permis</mat-option>
+            <mat-option value="Passport">Passport</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Numéro de pièce</mat-label>
+          <input matInput formControlName="pieceNumero" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Téléphone (optionnel)</mat-label>
+          <input matInput formControlName="telephone" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Date de naissance (optionnel)</mat-label>
+          <input matInput formControlName="dateNaissance" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Catégorie (optionnel)</mat-label>
+          <input matInput formControlName="categorieId" />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="!previewDone || loadingSubmit"
+      >
+        Valider la visite
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,27 @@
+# Déploiement modifié pour artpAdminWebCICD
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: artp-shell-deployment  
+  namespace: ${env}  
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: artp-shell 
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: artp-shell
+    spec:
+      containers:
+      - name: artp-shell 
+        image: "intrahub/repo:artp-shell_${env}_V${BUILD_NUMBER}"  
+        ports:
+        - containerPort: 80
+          protocol: TCP
+      imagePullSecrets:
+      - name: docker-secret
+
+

@@ -1,0 +1,27 @@
+# Déploiement modifié
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: artp-a360-api-deployment
+  namespace: ${env1}
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: artp-a360-api  
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: artp-a360-api 
+    spec:
+      containers:
+      - name: artp-a360-api  # Le nom du conteneur
+        image: "intrahub/repo:artp-a360-api_${env}_v${BUILD_NUMBER}"  
+        ports:
+        - containerPort: 3003
+          protocol: TCP
+      imagePullSecrets:
+      - name: docker-secret
+
+
